@@ -1,38 +1,50 @@
-def evaluate_resume(resume_text, skills):
-    # 1. Create an empty list to hold each line of our report
-    report_lines = []
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Initialize the OpenAI client automatically using the key from .env
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+def evaluate_resume(resume_text, required_skills):
+    # Format the skills list nicely into a string
+    skills_str = ", ".join(required_skills)
     
-    report_lines.append("Scanning Resume...\n")
+    # Craft the prompt for the AI
+    prompt = f"""
+    You are an expert AI Applicant Tracking System (ATS) and Senior Technical Recruiter. 
+    Analyze the candidate resume provided below against the required skills/job description.
     
-    found_count = 0
-    total_skills = len(skills)
+    Required Skills / Job Focus:
+    {skills_str}
     
-    # Convert resume text to lowercase once for accurate matching
-    resume_text_lower = resume_text.lower()
+    Candidate Resume Text:
+    {resume_text}
     
-    # 2. Loop through skills and append the results to our report list
-    for skill in skills:
-        if skill.lower() in resume_text_lower:
-            report_lines.append(f"✅ Found: {skill}")
-            found_count += 1
-        else:
-            report_lines.append(f"❌ Missing: {skill}")
-            
-    # 3. Calculate the match score
-    if total_skills > 0:
-        score = int((found_count / total_skills) * 100)
-    else:
-        score = 0
+    Please provide a professional, structured evaluation report containing:
+    1. Overall Match Score (Out of 100)
+    2. Matching Skills Found in the Resume
+    3. Missing Skills / Gaps
+    4. Final Recruitment Verdict (Shortlist or Reject, with a brief justification)
+    
+    Keep the layout clean, professional, and easy for an HR manager to read.
+    """
+
+    try:
+        # Call the OpenAI API using gpt-4o-mini
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a professional corporate recruiter and ATS engine."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+        )
         
-    # 4. Append the final score and status to the report
-    report_lines.append("\n--- Final ATS Report ---")
-    report_lines.append(f"Match Score: {score}%")
-    
-    if score >= 50:
-        report_lines.append("Status: 🟢 INTERVIEW SELECTED")
-    else:
-        report_lines.append("Status: 🔴 REJECTED")
-        
-    # 5. THE CRITICAL FIX: Join all the lines together with a line break (\n) 
-    # and RETURN the final text so app.py can send it to the HTML webpage.
-    return "\n".join(report_lines)
+        # Return the AI's response text
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"Error communicating with OpenAI API: {str(e)}"
