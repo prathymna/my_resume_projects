@@ -1,1 +1,1 @@
-print('hello corporate world')
+print("AI resume scanner:system initializing...")
