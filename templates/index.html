@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI ATS System</title>
+</head>
+<body>
+    <h1>AI Resume Screener</h1>
+    
+    <form method="POST">
+        <h3>Submit Candidate Resume</h3>
+        <textarea name="resume_input" rows="10" cols="60" placeholder="Paste the candidate's resume text here..."></textarea>
+        <br><br>
+        <button type="submit">Scan Resume</button>
+    </form>
+
+    <!-- NEW JINJA2 LOGIC: If a result exists, display this section -->
+    {% if result %}
+        <hr>
+        <h2>ATS Evaluation Results:</h2>
+        <!-- The double curly braces print the actual output from your Python function -->
+        <div>{{ result }}</div>
+    {% endif %}
+
+</body>
+</html>
