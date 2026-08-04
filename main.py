@@ -1,34 +1,38 @@
-# main.py
-import data
-
-# 1. We DEFINE the function (building the blender)
-def evaluate_resume(resume_text, required_skills):
-    print("Scanning Resume...\n")
-    match_count = 0
-    total_skills = len(required_skills)
-    resume_lower = resume_text.lower()
-
-    # Notice how this code is indented? That means it belongs inside the function.
-    for skill in required_skills:
-        if skill in resume_lower:
-            print(f"✅ Found: {skill.capitalize()}")
-            match_count += 1
+def evaluate_resume(resume_text, skills):
+    # 1. Create an empty list to hold each line of our report
+    report_lines = []
+    
+    report_lines.append("Scanning Resume...\n")
+    
+    found_count = 0
+    total_skills = len(skills)
+    
+    # Convert resume text to lowercase once for accurate matching
+    resume_text_lower = resume_text.lower()
+    
+    # 2. Loop through skills and append the results to our report list
+    for skill in skills:
+        if skill.lower() in resume_text_lower:
+            report_lines.append(f"✅ Found: {skill}")
+            found_count += 1
         else:
-            print(f"❌ Missing: {skill.capitalize()}")
-
-    raw_percentage = (match_count / total_skills) * 100
-    final_score = round(raw_percentage)
-
-    print("\n--- Final ATS Report ---")
-    print(f"Match Score: {final_score}%")
-
-    if final_score >= 50:
-        print("Status: 🟢 INTERVIEW SELECTED\n")
+            report_lines.append(f"❌ Missing: {skill}")
+            
+    # 3. Calculate the match score
+    if total_skills > 0:
+        score = int((found_count / total_skills) * 100)
     else:
-        print("Status: 🔴 REJECTED\n")
-
-# 2. We CALL the function (pressing the run button)
-# We pour our data from data.py into the engine
-evaluate_resume(data.resume_text, data.required_skills)
-print("\n--- Scanning Candidate 2 ---")
-evaluate_resume(data.resume_text_2, data.required_skills)
+        score = 0
+        
+    # 4. Append the final score and status to the report
+    report_lines.append("\n--- Final ATS Report ---")
+    report_lines.append(f"Match Score: {score}%")
+    
+    if score >= 50:
+        report_lines.append("Status: 🟢 INTERVIEW SELECTED")
+    else:
+        report_lines.append("Status: 🔴 REJECTED")
+        
+    # 5. THE CRITICAL FIX: Join all the lines together with a line break (\n) 
+    # and RETURN the final text so app.py can send it to the HTML webpage.
+    return "\n".join(report_lines)

@@ -2,25 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI ATS System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Scanner</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f9; 
+            padding: 40px; 
+        }
+        .container { 
+            background-color: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+        }
+        .dashboard-link {
+            display: block; 
+            text-align: right; 
+            text-decoration: none; 
+            color: #007bff; 
+            font-weight: bold; 
+            margin-bottom: 20px;
+        }
+        .dashboard-link:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        button { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            font-size: 16px;
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        .result-box { 
+            background-color: #e9ecef; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-top: 20px; 
+        }
+        pre { 
+            font-family: inherit; 
+            white-space: pre-wrap; 
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>AI Resume Screener</h1>
-    
-    <form method="POST">
-        <h3>Submit Candidate Resume</h3>
-        <textarea name="resume_input" rows="10" cols="60" placeholder="Paste the candidate's resume text here..."></textarea>
-        <br><br>
-        <button type="submit">Scan Resume</button>
-    </form>
 
-    <!-- NEW JINJA2 LOGIC: If a result exists, display this section -->
-    {% if result %}
-        <hr>
-        <h2>ATS Evaluation Results:</h2>
-        <!-- The double curly braces print the actual output from your Python function -->
-        <div>{{ result }}</div>
-    {% endif %}
+    <div class="container">
+        <h2>ATS Resume Scanner</h2>
+        
+        <!-- Navigation link to the Dashboard -->
+        <a href="/dashboard" class="dashboard-link">View Dashboard →</a>
+        
+        <!-- The enctype attribute is MANDATORY for uploading files -->
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <label for="resume_file"><strong>Upload Candidate Resume (PDF):</strong></label><br><br>
+            
+            <input type="file" name="resume_file" accept=".pdf" required><br><br>
+            
+            <button type="submit">Upload and Scan</button>
+        </form>
+
+        <!-- Jinja2 logic: If the backend sends a result, display this box -->
+        {% if result %}
+        <div class="result-box">
+            <h3>Scan Results:</h3>
+            <pre>{{ result }}</pre>
+        </div>
+        {% endif %}
+    </div>
 
 </body>
 </html>
